@@ -7,46 +7,96 @@ from src.rectangle import Rect
 # Core logic function.
 def handle_logic():
 
-	key = libtcod.console_wait_for_keypress(True)
-	if handle_player(key): # If the exit key is pressed
-		return True # Exit
+	global player
 
-	#handle_entities()
+	key = libtcod.console_wait_for_keypress(True)
+	player_command = handle_input(key, player)
+	if player_command[0] == "E" : # If the exit key is pressed
+		return True # Exit
+	elif player_command[0] == "U" : # If no valid key is pressed
+		return False # Pass
+
+	handle_player(player_command, player)
+
+	handle_entities()
 
 # Takes a key press from the player, and updates their state based on it
-def handle_player(key):
+def handle_input(key, player):
 	if key.vk == libtcod.KEY_ENTER and key.lalt:
 		#Alt+Enter: toggle fullscreen
 		libtcod.console_set_fullscreen(not libtcod.console_is_fullscreen())
 
 	elif key.vk == libtcod.KEY_ESCAPE:
-		return True  #exit game FIXME
+		return "E"  #exit game
 
-	global player
-
-	movex = movey = 0
+	move_x = move_y = 0
 
 	#movement keys
 	if libtcod.console_is_key_pressed(libtcod.KEY_UP):
-		movey -= 1
+		move_y -= 1
 
 	elif libtcod.console_is_key_pressed(libtcod.KEY_DOWN):
-		movey += 1
+		move_y += 1
 
 	elif libtcod.console_is_key_pressed(libtcod.KEY_LEFT):
-		movex -= 1
+		move_x -= 1
 
 	elif libtcod.console_is_key_pressed(libtcod.KEY_RIGHT):
-		movex += 1
+		move_x += 1
 
-	player.move(movex, movey, map)
-	global stairs
-	if stairs.x == player.x and stairs.y == player.y:
-		make_map()
+	elif libtcod.console_is_key_pressed(libtcod.KEY_DELETE):
+		print "waiting!"
+		move_x += 0
+		move_y += 0
+
+	else:
+		return "U" # Useless keypress
+
+	return [move_x, move_y]
 
 # Loops through all the entities and figures out what they should be doing on this tick
 def handle_entities():
 	print "handled"
+
+# Handles player commands based on previously parsed input
+def handle_player(player_command, player):
+	move_x = player_command[0]
+	move_y = player_command[1]
+
+	planned_x = player.x + move_x
+	planned_y = player.y + move_y
+
+	move_entity = get_entity(planned_x, planned_y)
+	print move_entity
+
+	if move_entity:
+		# Do thing!
+		handle_single_entity(move_entity)
+	else:
+		# Coast is clear, feel free to run move function
+		player.move(move_x, move_y, map)
+	
+	global stairs
+	if stairs.x == player.x and stairs.y == player.y:
+		make_map() #Group: object, name: stairs
+
+# Handle a single entity, as seen by player
+def handle_single_entity(sent):
+	if sent.group == "player":
+		# Do nothing
+		return;
+
+	elif sent.group == "object":
+
+		if sent.name == "stairs":
+			make_map()
+			return;
+
+	elif sent.group == "item":
+		return;
+
+	elif sent.group == "monster": 
+		return;
 
 def make_map():
 	global map
@@ -157,7 +207,7 @@ libtcod.sys_set_fps(LIMIT_FPS)
 
 initialStats = {"health":100, "attack":10, "defense":0.0, "nourishment":100}
 
-player = Entity(SCREEN_WIDTH/2, SCREEN_HEIGHT/2, '@', libtcod.red, con, "Player", "Apple Johnnyseed", ["hands"], initialStats)
+player = Entity(SCREEN_WIDTH/2, SCREEN_HEIGHT/2, '@', libtcod.red, con, "player", "Apple Johnnyseed", ["hands"], initialStats)
 stairs = Entity(0, 0, '=', libtcod.blue, con, 'object', 'stairs', [], {})
 entities = [stairs, player]
 make_map()

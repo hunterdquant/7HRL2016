@@ -142,7 +142,11 @@ def render_all():
 	global player
 	render_bar(30, 1, BAR_WIDTH, 'HP', player.stats["health"], 100,
 		libtcod.light_red, libtcod.darker_red)
-	render_inventory(10, 3, player.inventory)
+
+	global events
+
+	render_text(10, 3, "Inventory", player.inventory)
+	render_text(5, 5, "Events", events)
 
 	libtcod.console_blit(panel, 0, 0, SCREEN_WIDTH, PANEL_HEIGHT, 0, 0, PANEL_Y)
 
@@ -160,12 +164,12 @@ def render_bar(x, y, total_width, name, value, maximum, bar_color, back_color):
 	libtcod.console_print_ex(panel, x + total_width / 2, y, libtcod.BKGND_NONE, libtcod.CENTER,
 		name + ': ' + str(value) + '/' + str(maximum))
 
-def render_inventory(x, y, inventory):
+def render_text(x, y, name, list):
 	libtcod.console_set_default_background(panel, libtcod.white)
-	iString = "Inventory: "
-	for item in inventory:
-		iString += item + " "
-	libtcod.console_print_ex(panel, x, y, libtcod.BKGND_NONE, libtcod.CENTER, iString)
+	string = name + ": "
+	for elem in list:
+		string += elem + ", "
+	libtcod.console_print_ex(panel, x, y, libtcod.BKGND_NONE, libtcod.CENTER, string)
 
 SCREEN_WIDTH = 80
 SCREEN_HEIGHT = 50
@@ -198,6 +202,8 @@ PANEL_HEIGHT = 7
 PANEL_Y = SCREEN_HEIGHT - PANEL_HEIGHT
 
 panel = libtcod.console_new(SCREEN_WIDTH, PANEL_HEIGHT)
+
+events = []
 
 make_map()
 while not libtcod.console_is_window_closed():

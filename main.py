@@ -76,10 +76,6 @@ def handle_player(player_command, player):
 		# Coast is clear, feel free to run move function
 		player.move(move_x, move_y, map)
 	
-	global stairs
-	if stairs.x == player.x and stairs.y == player.y:
-		make_map() #Group: object, name: stairs
-
 # Handle a single entity, as seen by player
 def handle_single_entity(sent):
 	if sent.group == "player":
@@ -95,7 +91,8 @@ def handle_single_entity(sent):
 	elif sent.group == "item":
 		return;
 
-	elif sent.group == "monster": 
+	elif sent.group == "enemy": 
+		# Attack the enemy!
 		return;
 
 def make_map():
@@ -125,7 +122,7 @@ def make_map():
 			if num_rooms == 0:
 				player.x = newx
 				player.y = newy
-			else:
+			else: # Not player spawn!
 				(prevx, prevy) = rooms[num_rooms-1].center();
 				if libtcod.random_get_int(0, 0, 1) == 1:
 					create_horz_tunnel(prevx, newx, prevy)
@@ -142,6 +139,17 @@ def make_map():
 	del entities[0]
 	stairs = Entity(stairsx, stairsy, '=', libtcod.blue, con, 'object', 'stairs', [], {})
 	entities.insert(0, stairs)
+
+	#Generate monsters!
+	for i in range (0, num_rooms):	
+		randy = randint(1, num_rooms - 1);
+		randMonst = get_random_enemy();
+		(centx, centy) = rooms[randy].center)();
+		randMonst.x = centx;
+		randMonst.y = centy;
+		entities.append(randMonst);
+			
+
 
 def get_entity(x, y):
 	for entity in entities:

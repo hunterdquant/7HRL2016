@@ -4,14 +4,14 @@ from src.entity import Entity
 from src.tile import Tile
 from src.rectangle import Rect
 
-# Core logic function. 
+# Core logic function.
 def handle_logic():
 
 	key = libtcod.console_wait_for_keypress(True)
-	if handle_player(key): # If the exit key is pressed 
+	if handle_player(key): # If the exit key is pressed
 		return True # Exit
-	
-	handle_entities()
+
+	#handle_entities()
 
 # Takes a key press from the player, and updates their state based on it
 def handle_player(key):
@@ -40,9 +40,13 @@ def handle_player(key):
 		movex += 1
 
 	player.move(movex, movey, map)
+	global stairs
+	if stairs.x == player.x and stairs.y == player.y:
+		make_map()
 
 # Loops through all the entities and figures out what they should be doing on this tick
-#def handle_entities():
+def handle_entities():
+	print "handled"
 
 def make_map():
 	global map
@@ -81,13 +85,20 @@ def make_map():
 					create_horz_tunnel(prevx, newx, newy)
 			rooms.append(new_room)
 			num_rooms += 1
+	stairs_index = random.randint(1, num_rooms-1)
+	(stairsx, stairsy) = rooms[stairs_index].center()
+	global stairs
+	stairs.clear()
+	del entities[0]
+	stairs = Entity(stairsx, stairsy, '=', libtcod.red, con, 'object', 'stairs', [], {})
+	entities.insert(0, stairs)
 
-	exit_index = random.randint(1, num_rooms-1)
-	(exitx, exity) = rooms[exit_index].center()
-	global exit
-	exit = Entity(exitx, exity, '=', libtcod.red, con, 'object', 'exit', [], {})
-	entities.insert(0, exit)
+def get_entity(x, y):
+	for entity in entities:
+		if entity.x == x and entity.y == y:
+			return entity
 
+	return False
 
 def create_room(room):
 	global map
@@ -124,7 +135,6 @@ def render_all():
 
 	libtcod.console_blit(con, 0, 0, SCREEN_WIDTH, SCREEN_HEIGHT, 0, 0, 0)
 
-
 SCREEN_WIDTH = 80
 SCREEN_HEIGHT = 50
 color_dark_wall = libtcod.Color(50, 50, 50)
@@ -148,9 +158,8 @@ libtcod.sys_set_fps(LIMIT_FPS)
 initialStats = {"health":100, "attack":10, "defense":0.0, "nourishment":100}
 
 player = Entity(SCREEN_WIDTH/2, SCREEN_HEIGHT/2, '@', libtcod.white, con, "Player", "Apple Johnnyseed", ["hands"], initialStats)
-npc = Entity(SCREEN_WIDTH/2 - 5, SCREEN_HEIGHT/2, '@', libtcod.yellow, con, "Monster", "RANDOM ENTITY", [""], [])
-
-entities = [npc, player]
+stairs = Entity(0, 0, '=', libtcod.red, con, 'object', 'stairs', [], {})
+entities = [stairs, player]
 make_map()
 while not libtcod.console_is_window_closed():
 	render_all()

@@ -90,7 +90,7 @@ def make_map():
 	global stairs
 	stairs.clear()
 	del entities[0]
-	stairs = Entity(stairsx, stairsy, '=', libtcod.red, con, 'object', 'stairs', [], {})
+	stairs = Entity(stairsx, stairsy, '=', libtcod.blue, con, 'object', 'stairs', [], {})
 	entities.insert(0, stairs)
 
 def get_entity(x, y):
@@ -137,8 +137,8 @@ def render_all():
 
 SCREEN_WIDTH = 80
 SCREEN_HEIGHT = 50
-color_dark_wall = libtcod.Color(50, 50, 50)
-color_dark_ground = libtcod.Color(100, 100, 100)
+color_dark_wall = libtcod.Color(50, 100, 50)
+color_dark_ground = libtcod.Color(100, 150, 100)
 
 MAP_WIDTH = 80
 MAP_HEIGHT = 45
@@ -157,8 +157,8 @@ libtcod.sys_set_fps(LIMIT_FPS)
 
 initialStats = {"health":100, "attack":10, "defense":0.0, "nourishment":100}
 
-player = Entity(SCREEN_WIDTH/2, SCREEN_HEIGHT/2, '@', libtcod.white, con, "Player", "Apple Johnnyseed", ["hands"], initialStats)
-stairs = Entity(0, 0, '=', libtcod.red, con, 'object', 'stairs', [], {})
+player = Entity(SCREEN_WIDTH/2, SCREEN_HEIGHT/2, '@', libtcod.red, con, "Player", "Apple Johnnyseed", ["hands"], initialStats)
+stairs = Entity(0, 0, '=', libtcod.blue, con, 'object', 'stairs', [], {})
 entities = [stairs, player]
 make_map()
 while not libtcod.console_is_window_closed():

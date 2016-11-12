@@ -3,7 +3,7 @@ from src.entity import Entity
 from src.tile import Tile
 from src.rectangle import Rect
 
-def handle_keys():
+def handle_logic():
 
 	key = libtcod.console_wait_for_keypress(True)
 	if key.vk == libtcod.KEY_ENTER and key.lalt:
@@ -127,8 +127,11 @@ libtcod.console_init_root(SCREEN_WIDTH, SCREEN_HEIGHT, 'All-American Lawnmower T
 con = libtcod.console_new(SCREEN_WIDTH, SCREEN_HEIGHT)
 libtcod.sys_set_fps(LIMIT_FPS)
 
-player = Entity(SCREEN_WIDTH/2, SCREEN_HEIGHT/2, '@', libtcod.white, con)
-npc = Entity(SCREEN_WIDTH/2 - 5, SCREEN_HEIGHT/2, '@', libtcod.yellow, con)
+initialStats = {"health":100, "attack":10, "defense":0.0, "nourishment":100} 
+
+player = Entity(SCREEN_WIDTH/2, SCREEN_HEIGHT/2, '@', libtcod.white, con, "Player", "Apple Johnnyseed", ["hands"], initialStats)
+npc = Entity(SCREEN_WIDTH/2 - 5, SCREEN_HEIGHT/2, '@', libtcod.yellow, con, "Monster", "RANDOM ENTITY", [""], [])
+
 entities = [npc, player]
 make_map()
 while not libtcod.console_is_window_closed():
@@ -136,6 +139,6 @@ while not libtcod.console_is_window_closed():
 	for entity in entities:
 		entity.clear()
 	libtcod.console_flush()
-	exit = handle_keys()
+	exit = handle_logic() # Update game logic
 	if exit:
 		break

@@ -1,12 +1,16 @@
 import libtcodpy as libtcod
 
 class Entity:
-	def __init__(self, x, y, char, color, con):
+	def __init__(self, x, y, char, color, con, group, name, inventory, stats):
 		self.x = x
 		self.y = y
 		self.char = char
 		self.color = color
 		self.con = con
+		self.group = group
+		self.name = name
+		self.inventory = inventory
+		self.stats = stats
 
 	def move(self, dx, dy, map):
 		if not map[self.x + dx][self.y + dy].blocked:

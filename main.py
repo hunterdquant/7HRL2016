@@ -99,13 +99,24 @@ def handle_single_entity(sent):
 	elif sent.group == "object":
 
 		if sent.name == "stairs":
+			global entities
+			global player
+			global stairs
+			for entity in entities:
+				entity.clear()
+
+			entities = []
+
+			entities.append(stairs)
+			entities.append(player)
+
 			make_map()
 			return;
 
 	elif sent.group == "item":
 		return;
 
-	elif sent.group == "enemy": 
+	elif sent.group == "enemy":
 		# Attack the enemy!
 		return;
 
@@ -155,14 +166,14 @@ def make_map():
 	entities.insert(0, stairs)
 
 	#Generate monsters!
-	for i in range (0, num_rooms):	
+	for i in range (0, num_rooms):
 		randy = random.randint(1, num_rooms - 1);
 		randMonst = get_random_enemy();
 		(centx, centy) = rooms[randy].center();
 		randMonst.x = centx;
 		randMonst.y = centy;
 		entities.append(randMonst);
-			
+
 
 
 def get_entity(x, y):

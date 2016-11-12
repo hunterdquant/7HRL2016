@@ -60,14 +60,14 @@ def handle_entities():
 
 def get_random_enemy():
 	global enemy_types
-	idx = random.randint(0, len(enemy_types))
+	idx = random.randint(0, len(enemy_types) - 1)
 	etype = enemy_types[idx]
 	if etype == enemy_types[0]:
 		return Entity(0, 0, 'G', libtcod.yellow, con, "enemy", etype, [], {"health":25,"damage":5,"defense":0.0,"nourishment":100})
 	elif etype == enemy_types[1]:
 		return Entity(0, 0, 'N', libtcod.white, con, "enemy", etype, [], {"health":25,"damage":5,"defense":0.0,"nourishment":100})
 	elif etype == enemy_types[2]:
-		return Entity(0, 0, 'B', libtcod.brown, con, "enemy", etype, [], {"health":25,"damage":5,"defense":0.0,"nourishment":100})
+		return Entity(0, 0, 'B', libtcod.orange, con, "enemy", etype, [], {"health":25,"damage":5,"defense":0.0,"nourishment":100})
 	elif etype == enemy_types[3]:
 		return Entity(0, 0, 'L', libtcod.cyan, con, "enemy", etype, [], {"health":25,"damage":5,"defense":0.0,"nourishment":100})
 
@@ -156,9 +156,9 @@ def make_map():
 
 	#Generate monsters!
 	for i in range (0, num_rooms):	
-		randy = randint(1, num_rooms - 1);
+		randy = random.randint(1, num_rooms - 1);
 		randMonst = get_random_enemy();
-		(centx, centy) = rooms[randy].center)();
+		(centx, centy) = rooms[randy].center();
 		randMonst.x = centx;
 		randMonst.y = centy;
 		entities.append(randMonst);

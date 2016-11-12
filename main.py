@@ -58,6 +58,20 @@ def handle_input(key, player):
 def handle_entities():
 	print "handled"
 
+def get_random_enemy():
+	global enemy_types
+	idx = random.randint(0, len(enemy_types))
+	etype = enemy_types[idx]
+	if etype == enemy_types[0]:
+		return Entity(0, 0, 'G', libtcod.yellow, con, "enemy", etype, [], {"health":25,"damage":5,"defense":0.0,"nourishment":100})
+	elif etype == enemy_types[1]:
+		return Entity(0, 0, 'N', libtcod.white, con, "enemy", etype, [], {"health":25,"damage":5,"defense":0.0,"nourishment":100})
+	elif etype == enemy_types[2]:
+		return Entity(0, 0, 'B', libtcod.brown, con, "enemy", etype, [], {"health":25,"damage":5,"defense":0.0,"nourishment":100})
+	elif etype == enemy_types[3]:
+		return Entity(0, 0, 'L', libtcod.cyan, con, "enemy", etype, [], {"health":25,"damage":5,"defense":0.0,"nourishment":100})
+
+
 # Handles player commands based on previously parsed input
 def handle_player(player_command, player):
 	move_x = player_command[0]
@@ -75,7 +89,7 @@ def handle_player(player_command, player):
 	else:
 		# Coast is clear, feel free to run move function
 		player.move(move_x, move_y, map)
-	
+
 # Handle a single entity, as seen by player
 def handle_single_entity(sent):
 	if sent.group == "player":
@@ -228,6 +242,8 @@ def render_text(x, y, name, list):
 	for elem in list:
 		string += elem + ", "
 	libtcod.console_print_ex(panel, x, y, libtcod.BKGND_NONE, libtcod.CENTER, string)
+
+enemy_types = ["Garden Gnome", "Skinny Dipper", "Doggo", "Lawnmower"]
 
 SCREEN_WIDTH = 80
 SCREEN_HEIGHT = 50

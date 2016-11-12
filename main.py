@@ -41,7 +41,7 @@ def handle_player(key):
 	player.move(movex, movey, map)
 
 # Loops through all the entities and figures out what they should be doing on this tick
-def handle_entities():
+#def handle_entities():
 
 def make_map():
 	global map

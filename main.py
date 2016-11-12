@@ -185,13 +185,49 @@ def render_all():
 
 	libtcod.console_blit(con, 0, 0, SCREEN_WIDTH, SCREEN_HEIGHT, 0, 0, 0)
 
+
+	libtcod.console_set_default_background(panel, libtcod.black)
+	libtcod.console_clear(panel)
+
+	global player
+	render_bar(30, 1, BAR_WIDTH, 'HP', player.stats["health"], 100,
+		libtcod.light_red, libtcod.darker_red)
+
+	global events
+
+	render_text(10, 3, "Inventory", player.inventory)
+	render_text(5, 5, "Events", events)
+
+	libtcod.console_blit(panel, 0, 0, SCREEN_WIDTH, PANEL_HEIGHT, 0, 0, PANEL_Y)
+
+def render_bar(x, y, total_width, name, value, maximum, bar_color, back_color):
+	bar_width = int(float(value) / maximum * total_width)
+
+	libtcod.console_set_default_background(panel, back_color)
+	libtcod.console_rect(panel, x, y, total_width, 1, False, libtcod.BKGND_SCREEN)
+
+	libtcod.console_set_default_background(panel, bar_color)
+	if bar_width > 0:
+		libtcod.console_rect(panel, x, y, bar_width, 1, False, libtcod.BKGND_SCREEN)
+
+	libtcod.console_set_default_foreground(panel, libtcod.white)
+	libtcod.console_print_ex(panel, x + total_width / 2, y, libtcod.BKGND_NONE, libtcod.CENTER,
+		name + ': ' + str(value) + '/' + str(maximum))
+
+def render_text(x, y, name, list):
+	libtcod.console_set_default_background(panel, libtcod.white)
+	string = name + ": "
+	for elem in list:
+		string += elem + ", "
+	libtcod.console_print_ex(panel, x, y, libtcod.BKGND_NONE, libtcod.CENTER, string)
+
 SCREEN_WIDTH = 80
 SCREEN_HEIGHT = 50
 color_dark_wall = libtcod.Color(50, 100, 50)
 color_dark_ground = libtcod.Color(100, 150, 100)
 
 MAP_WIDTH = 80
-MAP_HEIGHT = 45
+MAP_HEIGHT = 43
 
 ROOM_MAX_SIZE = 10
 ROOM_MIN_SIZE = 6
@@ -210,6 +246,15 @@ initialStats = {"health":100, "attack":10, "defense":0.0, "nourishment":100}
 player = Entity(SCREEN_WIDTH/2, SCREEN_HEIGHT/2, '@', libtcod.red, con, "player", "Apple Johnnyseed", ["hands"], initialStats)
 stairs = Entity(0, 0, '=', libtcod.blue, con, 'object', 'stairs', [], {})
 entities = [stairs, player]
+
+BAR_WIDTH = 20
+PANEL_HEIGHT = 7
+PANEL_Y = SCREEN_HEIGHT - PANEL_HEIGHT
+
+panel = libtcod.console_new(SCREEN_WIDTH, PANEL_HEIGHT)
+
+events = []
+
 make_map()
 while not libtcod.console_is_window_closed():
 	render_all()

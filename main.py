@@ -4,33 +4,45 @@ from src.entity import Entity
 from src.tile import Tile
 from src.rectangle import Rect
 
+# Core logic function. 
 def handle_logic():
 
 	key = libtcod.console_wait_for_keypress(True)
+	if handle_player(key): # If the exit key is pressed 
+		return True # Exit
+	
+	handle_entities()
+
+# Takes a key press from the player, and updates their state based on it
+def handle_player(key):
 	if key.vk == libtcod.KEY_ENTER and key.lalt:
 		#Alt+Enter: toggle fullscreen
 		libtcod.console_set_fullscreen(not libtcod.console_is_fullscreen())
 
 	elif key.vk == libtcod.KEY_ESCAPE:
-		return True  #exit game
+		return True  #exit game FIXME
 
 	global player
 
-	playerx = playery = 0
+	movex = movey = 0
 
 	#movement keys
 	if libtcod.console_is_key_pressed(libtcod.KEY_UP):
-		playery -= 1
+		movey -= 1
 
 	elif libtcod.console_is_key_pressed(libtcod.KEY_DOWN):
-		playery += 1
+		movey += 1
 
 	elif libtcod.console_is_key_pressed(libtcod.KEY_LEFT):
-		playerx -= 1
+		movex -= 1
 
 	elif libtcod.console_is_key_pressed(libtcod.KEY_RIGHT):
-		playerx += 1
-	player.move(playerx, playery, map)
+		movex += 1
+
+	player.move(movex, movey, map)
+
+# Loops through all the entities and figures out what they should be doing on this tick
+#def handle_entities():
 
 def make_map():
 	global map

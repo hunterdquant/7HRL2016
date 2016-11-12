@@ -1,9 +1,11 @@
 import libtcodpy as libtcod
 from src.entity import Entity
+from src.tile import Tile
+from src.rectangle import Rect
 
 def handle_keys():
 
-    key = libtcod.console_check_for_keypress()
+    key = libtcod.console_wait_for_keypress(True)
     if key.vk == libtcod.KEY_ENTER and key.lalt:
         #Alt+Enter: toggle fullscreen
         libtcod.console_set_fullscreen(not libtcod.console_is_fullscreen())
@@ -27,14 +29,95 @@ def handle_keys():
 
     elif libtcod.console_is_key_pressed(libtcod.KEY_RIGHT):
         playerx += 1
+    player.move(playerx, playery, map)
 
-    player.move(playerx, playery)
+def make_map():
+    global map
+
+    map = [[Tile(True)
+        for y in range(MAP_HEIGHT)]
+            for x in range(MAP_WIDTH)]
+
+    rooms = []
+    num_rooms = 0
+    for r in range(MAX_ROOMS):
+        w = libtcod.random_get_int(0, ROOM_MIN_SIZE, ROOM_MAX_SIZE)
+        h = libtcod.random_get_int(0, ROOM_MIN_SIZE, ROOM_MAX_SIZE)
+        x = libtcod.random_get_int(0, 0, MAP_WIDTH - w - 1)
+        y = libtcod.random_get_int(0, 0, MAP_HEIGHT - h - 1)
+        new_room = Rect(x, y, w, h)
+        intersected = False
+        for room in rooms:
+            if new_room.overlap(room):
+                intersected = True
+                break
+
+        if not intersected:
+            create_room(new_room)
+            (newx,newy) = new_room.center()
+            if num_rooms == 0:
+                player.x = newx
+                player.y = newy
+            else:
+                (prevx, prevy) = rooms[num_rooms-1].center();
+                if libtcod.random_get_int(0, 0, 1) == 1:
+                    create_horz_tunnel(prevx, newx, prevy)
+                    create_vert_tunnel(prevy, newy, newx)
+                else:
+                    create_vert_tunnel(prevy, newy, prevx)
+                    create_horz_tunnel(prevx, newx, newy)
+            rooms.append(new_room)
+            num_rooms += 1
+
+
+
+def create_room(room):
+    global map
+    #go through the tiles in the rectangle and make them passable
+    for x in range(room.x1 + 1, room.x2):
+        for y in range(room.y1 + 1, room.y2):
+            map[x][y].blocked = False
+            map[x][y].block_sight = False
+
+def create_horz_tunnel(x1, x2, y):
+    global map
+    for x in range(min(x1, x2), max(x1, x2) + 1):
+        map[x][y].blocked = False
+        map[x][y].block_sight = False
+
+def create_vert_tunnel(y1, y2, x):
+    global map
+    for y in range(min(y1, y2), max(y1, y2) + 1):
+        map[x][y].blocked = False
+        map[x][y].block_sight = False
+
+def render_all():
+
+    for entity in entities:
+        entity.draw();
+
+    for y in range(MAP_HEIGHT):
+        for x in range(MAP_WIDTH):
+            wall = map[x][y].block_sight
+            if wall:
+                libtcod.console_set_char_background(con, x, y, color_dark_wall, libtcod.BKGND_SET)
+            else:
+                libtcod.console_set_char_background(con, x, y, color_dark_ground, libtcod.BKGND_SET)
+
+    libtcod.console_blit(con, 0, 0, SCREEN_WIDTH, SCREEN_HEIGHT, 0, 0, 0)
+
 
 SCREEN_WIDTH = 80
 SCREEN_HEIGHT = 50
+color_dark_wall = libtcod.Color(50, 50, 50)
+color_dark_ground = libtcod.Color(100, 100, 100)
 
 MAP_WIDTH = 80
 MAP_HEIGHT = 45
+
+ROOM_MAX_SIZE = 10
+ROOM_MIN_SIZE = 6
+MAX_ROOMS = 60
 
 LIMIT_FPS = 20
 
@@ -46,16 +129,13 @@ libtcod.sys_set_fps(LIMIT_FPS)
 
 player = Entity(SCREEN_WIDTH/2, SCREEN_HEIGHT/2, '@', libtcod.white, con)
 npc = Entity(SCREEN_WIDTH/2 - 5, SCREEN_HEIGHT/2, '@', libtcod.yellow, con)
-objects = [npc, player]
-
+entities = [npc, player]
+make_map()
 while not libtcod.console_is_window_closed():
-    for object in objects:
-        object.draw()
-    libtcod.console_blit(con, 0, 0, SCREEN_WIDTH, SCREEN_HEIGHT, 0, 0, 0)
+    render_all()
+    for entity in entities:
+        entity.clear()
     libtcod.console_flush()
-
-    for object in objects:
-        object.clear()
     exit = handle_keys()
     if exit:
         break

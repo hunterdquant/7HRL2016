@@ -8,9 +8,10 @@ class Entity:
         self.color = color
         self.con = con
 
-    def move(self, dx, dy):
-        self.x += dx
-        self.y += dy
+    def move(self, dx, dy, map):
+        if not map[self.x + dx][self.y + dy].blocked:
+            self.x += dx
+            self.y += dy
 
     def draw(self):
         libtcod.console_set_default_foreground(self.con, self.color)

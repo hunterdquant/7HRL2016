@@ -20,6 +20,11 @@ def handle_logic():
 
 	handle_entities()
 
+	#global entities
+	#for i in range(0, len(entities)):
+	#	if entities[i].stats["health"] <= 0:
+	#		del entities[i]
+
 # Takes a key press from the player, and updates their state based on it
 def handle_input(key, player):
 	if key.vk == libtcod.KEY_ENTER and key.lalt:
@@ -56,7 +61,15 @@ def handle_input(key, player):
 
 # Loops through all the entities and figures out what they should be doing on this tick
 def handle_entities():
-	print "handled"
+	global entities
+	print "AGH"
+	#for entity in entities:
+		#if entity.group == "enemy":
+		#	planx = entity.x + random.randint(-1, 1);
+		#	plany = entity.y + random.randint(-1, 1);
+		#	while (map[planx][plany].blocked):
+		#		planx = entity.x + random.randint(-1, 1);
+		#		plany = entity.y + random.randint(-1, 1);
 
 def get_random_enemy():
 	global enemy_types
@@ -92,6 +105,8 @@ def handle_player(player_command, player):
 
 # Handle a single entity, as seen by player
 def handle_single_entity(sent):
+	global player
+
 	if sent.group == "player":
 		# Do nothing
 		return;
@@ -107,7 +122,15 @@ def handle_single_entity(sent):
 
 	elif sent.group == "enemy": 
 		# Attack the enemy!
-		return;
+		sent.stats["health"] = sent.stats["health"] - player.stats["attack"]
+		if sent.stats["health"] <= 0:
+			sent.clear()
+			return
+		player.stats["health"] = player.stats["health"] - sent.stats["damage"] 
+		if player.stats["health"] <= 0:
+			print "YOU DED SON"
+			exit()
+			return
 
 def make_map():
 	global map

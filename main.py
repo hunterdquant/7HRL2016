@@ -22,9 +22,12 @@ def handle_logic():
 
 	global entities
 	for i in range(0, len(entities)):
-		if entities[i].group == "objects":
+		if entities[i].group == "enemy":
 			if entities[i].stats["health"] <= 0:
+				print "killing"
+				entities[i].clear()
 				del entities[i]
+				break
 
 # Takes a key press from the player, and updates their state based on it
 def handle_input(key, player):
@@ -138,7 +141,7 @@ def handle_single_entity(sent):
 		if sent.stats["health"] <= 0:
 			sent.clear()
 			return
-		player.stats["health"] = player.stats["health"] - sent.stats["damage"] 
+		player.stats["health"] = player.stats["health"] - sent.stats["damage"]
 		if player.stats["health"] <= 0:
 			print "YOU DED SON"
 			exit()

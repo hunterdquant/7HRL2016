@@ -20,10 +20,11 @@ def handle_logic():
 
 	handle_entities()
 
-	#global entities
-	#for i in range(0, len(entities)):
-	#	if entities[i].stats["health"] <= 0:
-	#		del entities[i]
+	global entities
+	for i in range(0, len(entities)):
+		if entities[i].group == "objects":
+			if entities[i].stats["health"] <= 0:
+				del entities[i]
 
 # Takes a key press from the player, and updates their state based on it
 def handle_input(key, player):
